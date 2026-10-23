@@ -12,7 +12,7 @@
  "voucher_value": 50000,
  "cap_per_wallet": 3,
  "player_supply": 300,
- "player_minted": 20,
+ "player_minted": 21,
  "reserved_total": 33,
  "reserved_minted": 3,
  "wallet_vouchers": {
@@ -24,7 +24,8 @@
   "h:d2475616494826b4": 2,
   "h:8037fb44f4601c58": 2,
   "h:4d5e7ebfa1711ca5": 3,
-  "h:504a5683365e66a7": 1
+  "h:504a5683365e66a7": 1,
+  "h:86413675b5ba9c6c": 1
  },
  "requests": [
   {
@@ -338,7 +339,15 @@
    "reason": null,
    "total": 50000,
    "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD173213392158014BB5C2"
+  },
+  {
+   "id": "CMMVLK25ME",
+   "w": "h:86413675b5ba9c6c",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD17322A1EF25B014BB5C3"
   }
  ],
- "updated": 1792795379.7982974
+ "updated": 1792795458.993698
 }
