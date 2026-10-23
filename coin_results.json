@@ -313,7 +313,15 @@
    "reason": "WALLET_CAP_ROOM_1",
    "total": 100000,
    "voucher": null
+  },
+  {
+   "id": "CMMVLI4ZET",
+   "w": "h:86413675b5ba9c6c",
+   "status": "refunded",
+   "reason": "MISSING_OFFER_TO_MACHINE (9/1)",
+   "total": null,
+   "voucher": null
   }
  ],
- "updated": 1792789004.4382653
+ "updated": 1792792518.9317286
 }
