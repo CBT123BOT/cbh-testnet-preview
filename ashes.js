@@ -19,7 +19,7 @@ const rumble=()=>{for(let i=0;i<6;i++)tone(70+Math.random()*30,.25,i*.3,'sawtoot
 const paintMute=()=>{g('mute').textContent=mute?'🔇 Off':'🔊 On'};g('mute').onclick=()=>{mute=!mute;localStorage.setItem('mp_mute',mute?'1':'0');paintMute();if(!mute)tone(660,.08)};paintMute();
 // tabs
 document.querySelectorAll('.tabs a').forEach(a=>a.onclick=e=>{e.preventDefault();show(a.dataset.t)});
-function show(t){document.querySelectorAll('.tabs a').forEach(x=>x.classList.toggle('on',x.dataset.t===t));['shop','att','vogue','ashes','coin'].forEach(x=>g('t-'+x).hidden=x!==t);history.replaceState(null,'','#'+t)}
+function show(t){if(!['ashes','coin'].includes(t))t='ashes';document.querySelectorAll('.tabs a').forEach(x=>x.classList.toggle('on',x.dataset.t===t));['shop','att','vogue','ashes','coin'].forEach(x=>g('t-'+x).hidden=x!==t);history.replaceState(null,'','#'+t)}
 // Xaman
 async function sign(txjson,instruction){if(!XM)throw new Error('Connect Xaman first');
  const sub=await XM.payload.createAndSubscribe({txjson,options:{force_network:NET},custom_meta:{instruction}},e=>{if('signed' in e.data)return e.data});
@@ -34,20 +34,29 @@ function paintShops(){if(!C)return;
  g('poseGrid').innerHTML=Object.entries(C.poses||{}).map(([id,n])=>`<div class="it"><img src="img/pose_${id}.jpg" alt=""><div>${n}</div><span class="left">111 · 1.11 XRP</span><a class="cafe" href="${CAFE}" target="_blank" rel="noopener">xrp.cafe ↗</a></div>`).join('')}
 // claims: 0-XRP sell offers from our issuer to THIS wallet (parts + finished pickles)
 async function paintClaims(){if(!valid(W())||!C)return;let L=[];for(const iss of [C.pickle_issuer,CR&&CR.coin_issuer].filter(Boolean)){try{const r=await rq({command:'account_objects',account:iss,type:'nft_offer',limit:400});L=L.concat((r.result.account_objects||[]).filter(o=>o.Destination===W()&&o.Amount==='0'))}catch(e){}}
- g('cmClaims').innerHTML=g('claims').innerHTML=L.map(o=>`<a href="#" data-o="${o.index}">🎁 CLAIM (0 XRP)</a>`).join('');document.querySelectorAll('#claims a,#cmClaims a').forEach(x=>x.onclick=async e=>{e.preventDefault();try{await sign({TransactionType:'NFTokenAcceptOffer',NFTokenSellOffer:x.dataset.o},'Claim your Mickel Pickle (TESTNET, 0 XRP)')}catch(er){}setTimeout(refresh,6000)})}
+ const DONE=JSON.parse(sessionStorage.getItem('cbhClaimed')||'[]');L=L.filter(o=>!DONE.includes(o.index));const mark=ids=>{const d=JSON.parse(sessionStorage.getItem('cbhClaimed')||'[]').concat(ids);sessionStorage.setItem('cbhClaimed',JSON.stringify(d));ids.forEach(i=>document.querySelectorAll(`[data-o="${i}"]`).forEach(a=>a.remove()))};
+ const all=L.length>1?`<a href="#" class="claimall">🎁🎁 CLAIM ALL ${L.length} (0 XRP, ${Math.ceil(L.length/8)} signature${L.length>8?'s':''})</a>`:'';
+ g('cmClaims').innerHTML=g('claims').innerHTML=all+L.map(o=>`<a href="#" data-o="${o.index}">🎁 CLAIM (0 XRP)</a>`).join('');
+ document.querySelectorAll('#claims a[data-o],#cmClaims a[data-o]').forEach(x=>x.onclick=async e=>{e.preventDefault();if(x.dataset.busy)return;x.dataset.busy=1;try{await sign({TransactionType:'NFTokenAcceptOffer',NFTokenSellOffer:x.dataset.o},'Claim your Mickel Pickle (TESTNET, 0 XRP)');mark([x.dataset.o])}catch(er){delete x.dataset.busy}setTimeout(refresh,6000)});
+ document.querySelectorAll('.claimall').forEach(x=>x.onclick=async e=>{e.preventDefault();if(x.dataset.busy)return;x.dataset.busy=1;const ids=L.map(o=>o.index),G=[];for(let i=0;i<ids.length;i+=8)G.push(ids.slice(i,i+8));
+  try{for(let i=0;i<G.length;i++){const ai=await rq({command:'account_info',account:W(),ledger_index:'current'});const sq=ai.result.account_data.Sequence;
+   const raw=G[i].map((o,k)=>({RawTransaction:{TransactionType:'NFTokenAcceptOffer',Account:W(),NFTokenSellOffer:o,Flags:1073741824,Sequence:sq+1+k,Fee:'0',SigningPubKey:''}}));
+   x.textContent=`Signature ${i+1} of ${G.length}: claiming ${G[i].length} in Xaman…`;
+   await sign({TransactionType:'Batch',Flags:524288,Sequence:sq,RawTransactions:raw},`CLAIM ALL (TESTNET, 0 XRP): signature ${i+1}/${G.length}, claim ${G[i].length} gifted NFTs in one signature`);mark(G[i]);
+   if(i<G.length-1)await new Promise(r=>setTimeout(r,5000))}}catch(er){delete x.dataset.busy}setTimeout(refresh,6000)})}
 // MACHINE
 async function loadMine(){mine={bases:[],atts:[],poses:[],vouchers:[]};myCoins=[];if(!valid(W())||!C)return;let all=[],marker;do{const r=(await rq({command:'account_nfts',account:W(),limit:400,marker})).result||{};all=all.concat(r.account_nfts||[]);marker=r.marker}while(marker);
  for(const n of all){if(CR&&n.Issuer===CR.coin_issuer){let m={};try{m=JSON.parse(hex2s(n.URI||'').replace(/^data:application\/json,/,''))}catch(e){}if(CR.values[m.metal])myCoins.push({id:n.NFTokenID,metal:m.metal,v:CR.values[m.metal]});continue}if(n.Issuer!==C.pickle_issuer)continue;if(n.NFTokenTaxon===5){mine.vouchers.push({id:n.NFTokenID});continue}let m={};try{m=JSON.parse(hex2s(n.URI||'').replace(/^data:application\/json,/,''))}catch(e){}
   if(n.NFTokenTaxon===1)mine.bases.push({id:n.NFTokenID});else if(n.NFTokenTaxon===2&&IMG[m.a])mine.atts.push({id:n.NFTokenID,a:m.a});else if(n.NFTokenTaxon===4&&m.o)mine.poses.push({id:n.NFTokenID,o:m.o})}}
 function paintMachine(){const bb=g('myBases'),aa=g('myAtts');pick.base=mine.bases.some(x=>x.id===pick.base)?pick.base:null;pick.att=pick.att.filter(i=>mine.atts.some(x=>x.id===i));
- bb.innerHTML=mine.bases.length?mine.bases.map(x=>`<div class="it ${pick.base===x.id?'sel':''}" data-id="${x.id}"><img src="img/base_standing_logo.jpg" alt=""><div>Base …${x.id.slice(-4)}</div></div>`).join(''):'<p class="note">No base pickles yet. Grab one in the Pickle Shop.</p>';
+ bb.innerHTML=mine.bases.length?mine.bases.map(x=>`<div class="it ${pick.base===x.id?'sel':''}" data-id="${x.id}"><img src="img/base_standing_logo.jpg" alt=""><div>Base …${x.id.slice(-4)}</div></div>`).join(''):'<p class="note">No base pickles yet. Grab one on xrp.cafe.</p>';
  // one tile per attachment type (spares = quantity); a pick holds the NFT id of the first copy of that type
  const groups={};mine.atts.forEach(x=>(groups[x.a]=groups[x.a]||[]).push(x.id));const picked=a=>pick.att.find(i=>groups[a].includes(i));
- aa.innerHTML=Object.keys(groups).length?Object.keys(C.attachments).filter(a=>groups[a]).map(a=>{const s=!!picked(a),off=!s&&pick.att.length>=3;return `<div class="it ${s?'sel':''} ${off?'off':''}" data-a="${a}">${groups[a].length>1?`<span class="qty">x${groups[a].length}</span>`:''}<img src="img/${IMG[a]}.jpg" alt=""><div>${C.attachments[a]}</div></div>`}).join(''):'<p class="note">No attachments yet. Visit the Attachment Shop.</p>';
+ aa.innerHTML=Object.keys(groups).length?Object.keys(C.attachments).filter(a=>groups[a]).map(a=>{const s=!!picked(a),off=!s&&pick.att.length>=3;return `<div class="it ${s?'sel':''} ${off?'off':''}" data-a="${a}">${groups[a].length>1?`<span class="qty">x${groups[a].length}</span>`:''}<img src="img/${IMG[a]}.jpg" alt=""><div>${C.attachments[a]}</div></div>`}).join(''):'<p class="note">No attachments yet. Grab some on xrp.cafe.</p>';
  bb.querySelectorAll('.it').forEach(e=>e.onclick=()=>{pick.base=pick.base===e.dataset.id?null:e.dataset.id;tone(500,.05);paintMachine()});
  aa.querySelectorAll('.it').forEach(e=>e.onclick=()=>{const a=e.dataset.a,cur=picked(a);if(cur)pick.att=pick.att.filter(i=>i!==cur);else if(pick.att.length<3)pick.att.push(groups[a][0]);tone(600,.05);paintMachine()});
  const pp=g('myPoses');pick.pose=mine.poses.some(x=>x.id===pick.pose)?pick.pose:null;
- pp.innerHTML=mine.poses.length?mine.poses.map(x=>`<div class="it ${pick.pose===x.id?'sel':''}" data-id="${x.id}"><img src="img/pose_${x.o}.jpg" alt=""><div>${(C.poses||{})[x.o]||x.o}</div></div>`).join(''):'<p class="note">No poses yet. Strike one in Vogue Out.</p>';
+ pp.innerHTML=mine.poses.length?mine.poses.map(x=>`<div class="it ${pick.pose===x.id?'sel':''}" data-id="${x.id}"><img src="img/pose_${x.o}.jpg" alt=""><div>${(C.poses||{})[x.o]||x.o}</div></div>`).join(''):'<p class="note">No poses yet. Grab one on xrp.cafe.</p>';
  pp.querySelectorAll('.it').forEach(e=>e.onclick=()=>{pick.pose=pick.pose===e.dataset.id?null:e.dataset.id;tone(550,.05);paintMachine()});
  useV=mine.vouchers.length>0;g('vmPay').innerHTML=mine.vouchers.length?`VOUCHER SLOT<br>💵 ${mine.vouchers.length} voucher${mine.vouchers.length>1?'s':''} ready`:'VOUCHER SLOT<br>no voucher yet';
  g('nAtt').textContent=pick.att.length+'/3';gate()}
@@ -93,7 +102,7 @@ g('cmInsert').onclick=async()=>{const ids=[...cmSel];busy=true;paintCoin();const
  }catch(e){g('cmStatus').textContent=e.message}cmSel.clear();busy=false;refresh()};
 async function refresh(){try{CR=await fj('coin_results.json')}catch(e){}try{R=await fj('ashes_results.json')}catch(e){}paintShops();if(MOCK){mine={vouchers:[{id:'MOCKVOUCHER1'}],bases:[{id:'MOCKBASE0001'},{id:'MOCKBASE0002'}],atts:['02','06','08','01','09'].map((a,i)=>({id:'MOCKATT000'+i,a})),poses:['p1','p2','p3'].map((o,i)=>({id:'MOCKPOSE000'+i,o}))};if(!pick.base){pick.base='MOCKBASE0001';pick.att=['MOCKATT0000','MOCKATT0001','MOCKATT0002'];pick.pose='MOCKPOSE0002'}}else{try{await loadMine()}catch(e){}}paintMachine();paintClaims();paintCoin()}
 g('w').onchange=refresh;
-(async()=>{C=await fj('ashes_public.json');const q=new URLSearchParams(location.search).get('wallet');if(valid(q))g('w').value=q;show((location.hash||'#shop').slice(1)||'shop');await refresh();
+(async()=>{C=await fj('ashes_public.json');const q=new URLSearchParams(location.search).get('wallet');if(valid(q))g('w').value=q;show((location.hash||'#ashes').slice(1)||'ashes');await refresh();
  const DEV=new URLSearchParams(location.search).get('finale');   // STAGING ONLY dev hook: ?finale=<build id> replays the final sequence for a finished build
  if(DEV&&/localhost|127\.0\.0\.1|^file/.test(location.href)){show('ashes');const b=(R.builds||[]).find(x=>x.id===DEV&&x.status==='done');if(b){g('status').innerHTML='🔥 Rising from the ashes… (dev replay)';await finale(b);g('status').textContent='Reborn! (dev replay of '+DEV+')'}return}
  const P=JSON.parse(localStorage.getItem('mp_pending')||'null');if(P&&Date.now()-P.t<36e5){show('ashes');rise(P.bid)}
