@@ -321,7 +321,15 @@
    "reason": "MISSING_OFFER_TO_MACHINE (9/1)",
    "total": null,
    "voucher": null
+  },
+  {
+   "id": "CM6ADBD989",
+   "w": "h:4d5e7ebfa1711ca5",
+   "status": "refunded",
+   "reason": "WALLET_CAP_3_VOUCHERS",
+   "total": 50000,
+   "voucher": null
   }
  ],
- "updated": 1792793021.0885925
+ "updated": 1792793127.6042376
 }
