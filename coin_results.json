@@ -12,7 +12,7 @@
  "voucher_value": 50000,
  "cap_per_wallet": 3,
  "player_supply": 300,
- "player_minted": 19,
+ "player_minted": 20,
  "reserved_total": 33,
  "reserved_minted": 3,
  "wallet_vouchers": {
@@ -23,7 +23,8 @@
   "h:be4c35428abdc7d5": 2,
   "h:d2475616494826b4": 2,
   "h:8037fb44f4601c58": 2,
-  "h:4d5e7ebfa1711ca5": 3
+  "h:4d5e7ebfa1711ca5": 3,
+  "h:504a5683365e66a7": 1
  },
  "requests": [
   {
@@ -329,7 +330,15 @@
    "reason": "WALLET_CAP_3_VOUCHERS",
    "total": 50000,
    "voucher": null
+  },
+  {
+   "id": "CM6ADBDBCE",
+   "w": "h:504a5683365e66a7",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD173213392158014BB5C2"
   }
  ],
- "updated": 1792793599.696168
+ "updated": 1792793679.9078915
 }
