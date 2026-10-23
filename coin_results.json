@@ -1,0 +1,319 @@
+{
+ "network": "TESTNET",
+ "machine": "rKNcqgCs6iDEWgE7R8S6EgLson2tikABmD",
+ "coin_issuer": "rEGzNjC7L6ssWSfVhkWEF5PrWBTKtw9Wqt",
+ "voucher_issuer": "rBSf91rKxgsWNnoaw7QVTW43mRBPrAgwBd",
+ "voucher_taxon": 5,
+ "values": {
+  "Copper": 1000,
+  "Silver": 10000,
+  "Gold": 100000
+ },
+ "voucher_value": 50000,
+ "cap_per_wallet": 3,
+ "player_supply": 300,
+ "player_minted": 19,
+ "reserved_total": 33,
+ "reserved_minted": 3,
+ "wallet_vouchers": {
+  "h:c3679cba75ec681d": 3,
+  "h:f90c96126277da3f": 3,
+  "h:f81372722ed81ccf": 3,
+  "h:2d84ed13eb9057d3": 1,
+  "h:be4c35428abdc7d5": 2,
+  "h:d2475616494826b4": 2,
+  "h:8037fb44f4601c58": 2,
+  "h:4d5e7ebfa1711ca5": 3
+ },
+ "requests": [
+  {
+   "id": "CMUNDER",
+   "w": "h:c3679cba75ec681d",
+   "status": "refunded",
+   "reason": "NOT_EXACTLY_50000 (40000)",
+   "total": 40000,
+   "voucher": null
+  },
+  {
+   "id": "CMOVER",
+   "w": "h:c3679cba75ec681d",
+   "status": "refunded",
+   "reason": "NOT_EXACTLY_50000 (100000)",
+   "total": 100000,
+   "voucher": null
+  },
+  {
+   "id": "CMEXACT1",
+   "w": "h:c3679cba75ec681d",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD1732EB67D108014BB572"
+  },
+  {
+   "id": "CMV2",
+   "w": "h:c3679cba75ec681d",
+   "status": "refunded",
+   "reason": "COIN_NOT_OWNED",
+   "total": null,
+   "voucher": null
+  },
+  {
+   "id": "CMV3",
+   "w": "h:c3679cba75ec681d",
+   "status": "refunded",
+   "reason": "COIN_NOT_OWNED",
+   "total": null,
+   "voucher": null
+  },
+  {
+   "id": "CMV4",
+   "w": "h:c3679cba75ec681d",
+   "status": "refunded",
+   "reason": "COIN_NOT_OWNED",
+   "total": null,
+   "voucher": null
+  },
+  {
+   "id": "CMV2b",
+   "w": "h:c3679cba75ec681d",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD173230194415014BB575"
+  },
+  {
+   "id": "CMV3b",
+   "w": "h:c3679cba75ec681d",
+   "status": "refunded",
+   "reason": "COIN_NOT_OWNED",
+   "total": null,
+   "voucher": null
+  },
+  {
+   "id": "CMV2b",
+   "w": "h:c3679cba75ec681d",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD17321933730A014BB574"
+  },
+  {
+   "id": "CMV3b",
+   "w": "h:c3679cba75ec681d",
+   "status": "refunded",
+   "reason": "COIN_NOT_OWNED",
+   "total": null,
+   "voucher": null
+  },
+  {
+   "id": "CMV3b",
+   "w": "h:c3679cba75ec681d",
+   "status": "refunded",
+   "reason": "BAD_OR_DUPLICATE_COINS",
+   "total": null,
+   "voucher": null
+  },
+  {
+   "id": "CMV4b",
+   "w": "h:c3679cba75ec681d",
+   "status": "refunded",
+   "reason": "BAD_OR_DUPLICATE_COINS",
+   "total": null,
+   "voucher": null
+  },
+  {
+   "id": "CMCAP4",
+   "w": "h:c3679cba75ec681d",
+   "status": "refunded",
+   "reason": "WALLET_CAP_3_VOUCHERS",
+   "total": 50000,
+   "voucher": null
+  },
+  {
+   "id": "P40242UNDER",
+   "w": "h:f90c96126277da3f",
+   "status": "refunded",
+   "reason": "NOT_EXACTLY_50000 (40000)",
+   "total": 40000,
+   "voucher": null
+  },
+  {
+   "id": "P40242OVER",
+   "w": "h:f90c96126277da3f",
+   "status": "refunded",
+   "reason": "NOT_EXACTLY_50000 (100000)",
+   "total": 100000,
+   "voucher": null
+  },
+  {
+   "id": "P40242VA",
+   "w": "h:f90c96126277da3f",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD17323EBF0B22014BB58C"
+  },
+  {
+   "id": "P40242VB",
+   "w": "h:f90c96126277da3f",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD173255A4DC2D014BB58D"
+  },
+  {
+   "id": "P40242VC",
+   "w": "h:f90c96126277da3f",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD17326C8AAD2C014BB58E"
+  },
+  {
+   "id": "P40242V4TH",
+   "w": "h:f90c96126277da3f",
+   "status": "refunded",
+   "reason": "WALLET_CAP_3_VOUCHERS",
+   "total": 50000,
+   "voucher": null
+  },
+  {
+   "id": "P40242DOWN",
+   "w": "h:f90c96126277da3f",
+   "status": "refunded",
+   "reason": "NOT_EXACTLY_50000 (20000)",
+   "total": 20000,
+   "voucher": null
+  },
+  {
+   "id": "P5UNDER",
+   "w": "h:f81372722ed81ccf",
+   "status": "refunded",
+   "reason": "NOT_EXACTLY_50000 (2000)",
+   "total": 2000,
+   "voucher": null
+  },
+  {
+   "id": "P5OVER",
+   "w": "h:f81372722ed81ccf",
+   "status": "refunded",
+   "reason": "NOT_EXACTLY_50000 (100000)",
+   "total": 100000,
+   "voucher": null
+  },
+  {
+   "id": "P5EXACT1",
+   "w": "h:f81372722ed81ccf",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD1732DF07C22B014BB593"
+  },
+  {
+   "id": "P5V2",
+   "w": "h:f81372722ed81ccf",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD1732F5ED932A014BB594"
+  },
+  {
+   "id": "P5V3",
+   "w": "h:f81372722ed81ccf",
+   "status": "refunded",
+   "reason": "COIN_NOT_OWNED",
+   "total": null,
+   "voucher": null
+  },
+  {
+   "id": "P5V3B",
+   "w": "h:f81372722ed81ccf",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD17320CD36435014BB595"
+  },
+  {
+   "id": "P5V4TH",
+   "w": "h:f81372722ed81ccf",
+   "status": "refunded",
+   "reason": "WALLET_CAP_3_VOUCHERS",
+   "total": 50000,
+   "voucher": null
+  },
+  {
+   "id": "P5CAPAFTER",
+   "w": "h:f81372722ed81ccf",
+   "status": "refunded",
+   "reason": "WALLET_CAP_3_VOUCHERS",
+   "total": 50000,
+   "voucher": null
+  },
+  {
+   "id": "P6V1",
+   "w": "h:2d84ed13eb9057d3",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD1732325EFC4D014BB5AD"
+  },
+  {
+   "id": "P7S5",
+   "w": "h:be4c35428abdc7d5",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD1732602A9E4F014BB5AF"
+  },
+  {
+   "id": "P7C50",
+   "w": "h:be4c35428abdc7d5",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD173277106F4E014BB5B0"
+  },
+  {
+   "id": "P8C50",
+   "w": "h:d2475616494826b4",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD17328DF64049014BB5B1"
+  },
+  {
+   "id": "P8S5",
+   "w": "h:d2475616494826b4",
+   "status": "done",
+   "reason": null,
+   "total": 50000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD1732A4DC1148014BB5B2"
+  },
+  {
+   "id": "P9G1",
+   "w": "h:8037fb44f4601c58",
+   "status": "done",
+   "reason": null,
+   "total": 100000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD1732BBC1E24B014BB5B3"
+  },
+  {
+   "id": "P10G1S5",
+   "w": "h:4d5e7ebfa1711ca5",
+   "status": "done",
+   "reason": null,
+   "total": 150000,
+   "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD1732E98D8455014BB5B5"
+  },
+  {
+   "id": "P9G2",
+   "w": "h:8037fb44f4601c58",
+   "status": "refunded",
+   "reason": "WALLET_CAP_ROOM_1",
+   "total": 100000,
+   "voucher": null
+  }
+ ],
+ "updated": 1792780379.9292793
+}
