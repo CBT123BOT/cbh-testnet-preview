@@ -22,7 +22,7 @@ document.querySelectorAll('.tabs a').forEach(a=>a.onclick=e=>{e.preventDefault()
 function show(t){if(!['ashes','coin'].includes(t))t='ashes';document.querySelectorAll('.tabs a').forEach(x=>x.classList.toggle('on',x.dataset.t===t));['shop','att','vogue','ashes','coin'].forEach(x=>g('t-'+x).hidden=x!==t);history.replaceState(null,'','#'+t)}
 // Xaman
 async function sign(txjson,instruction){if(!XM)throw new Error('Connect Xaman first');
- const sub=await XM.payload.createAndSubscribe({txjson,options:{force_network:NET},custom_meta:{instruction}},e=>{if('signed' in e.data)return e.data});
+ const sub=await XM.payload.createAndSubscribe({txjson,options:{force_network:NET,return_url:{app:location.href,web:location.href}},custom_meta:{instruction}},e=>{if('signed' in e.data)return e.data});
  if(isMobile)location.href=sub.created.next.always;else{g('qri').src=sub.created.refs.qr_png;g('qr').hidden=false}
  const r=await sub.resolved;g('qr').hidden=true;if(!r||!r.signed)throw new Error('Cancelled in Xaman, nothing sent.');return r}
 const W=()=>g('w').value.trim();
@@ -89,18 +89,29 @@ function paintCoin(){if(MOCK||!CR)return;const el=g('cmCoins');const tot=myCoins
   g('cmCount').textContent=fmt(tot);g('cmCount').nextElementSibling.textContent=cmSel.size+' coin'+(cmSel.size===1?'':'s');document.querySelector('.cm-bar i').style.width=Math.min(100,tot/500)+'%';document.querySelector('.cm-bar i').style.animation='none'}
  wh(W()).then(h=>{const n=(CR.wallet_vouchers||{})[h]||0;g('cmMine').textContent=`your vouchers: ${n}/${CR.cap_per_wallet} · ${CR.player_supply-CR.player_minted} of ${CR.player_supply} left`;
   const b=g('cmInsert');const kv=tot%CR.voucher_value===0?tot/CR.voucher_value:0,room=CR.cap_per_wallet-n;b.disabled=busy||!valid(W())||!kv||kv>room;const sg=Math.ceil(cmSel.size/7);b.textContent=n>=CR.cap_per_wallet?'LIMIT: 3 VOUCHERS':(tot&&!kv)?'MUST BE 50K, 100K or 150K':kv>room?`ONLY ${room} VOUCHER${room>1?'S':''} LEFT FOR YOU`:'INSERT '+fmt(tot)+(kv?` = ${kv} VOUCHER${kv>1?'S':''}`:'')+(sg?` · ${sg} signature${sg>1?'s':''}`:'');const si=g('cmSigs');if(si)si.textContent=cmSel.size?`${cmSel.size} coin${cmSel.size>1?'s':''} = ${sg} signature${sg>1?'s':''} in Xaman (7 coins per signature)`:'5 Silver = 1 voucher (1 signature) · 1 Gold = 2 vouchers (1 signature) · 50 Copper = 1 voucher (8 signatures)'})}
-g('cmInsert').onclick=async()=>{const ids=[...cmSel];busy=true;paintCoin();const vid='CM'+Date.now().toString(36).toUpperCase();
- try{const G=[];for(let i=0;i<ids.length;i+=7)G.push(ids.slice(i,i+7));const exp=Math.floor(Date.now()/1000)-946684800+3600;
-  for(let i=0;i<G.length;i++){g('cmStatus').textContent=`Signature ${i+1} of ${G.length}: ${G[i].length} coin${G[i].length>1?'s':''} into the hopper (TESTNET). Sign all ${G.length} or nothing is taken.`;
-   const sq=(await rq({command:'account_info',account:W(),ledger_index:'current'})).result.account_data.Sequence;
-   const raw=G[i].map((c,k)=>({RawTransaction:{TransactionType:'NFTokenCreateOffer',Account:W(),NFTokenID:c,Amount:'0',Flags:1073741825,Destination:CR.machine,Expiration:exp,Sequence:sq+1+k,Fee:'0',SigningPubKey:''}}));
-   raw.push({RawTransaction:{TransactionType:'Payment',Account:W(),Destination:CR.machine,Amount:'1',Flags:1073741824,Sequence:sq+1+G[i].length,Fee:'0',SigningPubKey:'',Memos:[{Memo:{MemoType:s2hex('CBH-COIN'),MemoData:s2hex(JSON.stringify({v:vid,i:i+1,of:G.length,n:ids.length}))}}]}});
-   await sign({TransactionType:'Batch',Flags:65536,Sequence:sq,Fee:String((raw.length+2)*20),RawTransactions:raw},`COIN MACHINE (TESTNET): signature ${i+1}/${G.length}, ${G[i].length} coins into the hopper`)}
-  g('cmStatus').textContent='Counting… your bill prints in about a minute, then a CLAIM button appears.';rumble();
-  for(let k=0;k<60;k++){await new Promise(r=>setTimeout(r,5000));try{CR=await fj('coin_results.json')}catch(e){continue}const q=(CR.requests||[]).find(x=>x.id===vid);
+// FIX Oct 23 PM: on a phone, opening Xaman leaves this page, so a JS loop never reached signature 2. The plan is saved; the page resumes it when you come back.
+const PK='cbhCoinPending';const getP=()=>{try{const p=JSON.parse(localStorage.getItem(PK)||'null');return p&&p.w===W()&&Date.now()-p.t<45*60e3?p:null}catch(e){return null}};
+async function runCoin(P){busy=true;paintCoin();
+ try{for(let i=P.done;i<P.G.length;i++){g('cmStatus').textContent=`Signature ${i+1} of ${P.G.length}: ${P.G[i].length} coin${P.G[i].length>1?'s':''} into the hopper (TESTNET). Sign all ${P.G.length} or nothing is taken.`;
+   const q0=(await rq({command:'account_info',account:W(),ledger_index:'current'})).result.account_data.Sequence;const sq=Math.max(q0,P.nsq||0);
+   const raw=P.G[i].map((c,k)=>({RawTransaction:{TransactionType:'NFTokenCreateOffer',Account:W(),NFTokenID:c,Amount:'0',Flags:1073741825,Destination:CR.machine,Expiration:P.exp,Sequence:sq+1+k,Fee:'0',SigningPubKey:''}}));
+   raw.push({RawTransaction:{TransactionType:'Payment',Account:W(),Destination:CR.machine,Amount:'1',Flags:1073741824,Sequence:sq+1+P.G[i].length,Fee:'0',SigningPubKey:'',Memos:[{Memo:{MemoType:s2hex('CBH-COIN'),MemoData:s2hex(JSON.stringify({v:P.vid,i:i+1,of:P.G.length,n:P.n,k:P.G[i].length}))}}]}});
+   P.cur=i;P.t=Date.now();localStorage.setItem(PK,JSON.stringify(P));
+   await sign({TransactionType:'Batch',Flags:65536,Sequence:sq,Fee:String((raw.length+2)*20),RawTransactions:raw},`COIN MACHINE (TESTNET): signature ${i+1}/${P.G.length}, ${P.G[i].length} coins into the hopper`);
+   P.done=i+1;P.nsq=sq+raw.length+1;localStorage.setItem(PK,JSON.stringify(P))}
+  localStorage.removeItem(PK);g('cmStatus').textContent='Counting… your bill prints in about a minute, then a CLAIM button appears.';rumble();
+  for(let k=0;k<60;k++){await new Promise(r=>setTimeout(r,5000));try{CR=await fj('coin_results.json')}catch(e){continue}const q=(CR.requests||[]).find(x=>x.id===P.vid);
    if(q&&q.status==='refunded'){g('cmStatus').textContent='Handed back: '+q.reason+'. Nothing was taken. (If you stop partway, your coin offers are cancelled automatically after 15 min.)';break}if(q&&q.status==='done'){chime();g('cmStatus').textContent='💵 Your Mickel Nickel bill(s) printed! Claim it below, then use it in the Vending Machine.';break}}
- }catch(e){g('cmStatus').textContent=e.message}cmSel.clear();busy=false;refresh()};
-async function refresh(){try{CR=await fj('coin_results.json')}catch(e){}try{R=await fj('ashes_results.json')}catch(e){}paintShops();if(MOCK){mine={vouchers:[{id:'MOCKVOUCHER1'}],bases:[{id:'MOCKBASE0001'},{id:'MOCKBASE0002'}],atts:['02','06','08','01','09'].map((a,i)=>({id:'MOCKATT000'+i,a})),poses:['p1','p2','p3'].map((o,i)=>({id:'MOCKPOSE000'+i,o}))};if(!pick.base){pick.base='MOCKBASE0001';pick.att=['MOCKATT0000','MOCKATT0001','MOCKATT0002'];pick.pose='MOCKPOSE0002'}}else{try{await loadMine()}catch(e){}}paintMachine();paintClaims();paintCoin()}
+ }catch(e){g('cmStatus').textContent=e.message+(getP()?' Tap CONTINUE to try again.':'')}cmSel.clear();busy=false;refresh();showResume()}
+function showResume(){const P=getP(),b=g('cmResume');if(!b)return;b.hidden=!P||busy;if(P)b.textContent=`▶ CONTINUE: sign ${P.done+1} of ${P.G.length} (your coins are waiting in the hopper)`}
+g('cmInsert').onclick=()=>{const ids=[...cmSel];const G=[];for(let i=0;i<ids.length;i+=7)G.push(ids.slice(i,i+7));
+ runCoin({w:W(),vid:'CM'+Date.now().toString(36).toUpperCase(),G,n:ids.length,exp:Math.floor(Date.now()/1000)-946684800+3600,done:0,nsq:0,t:Date.now()})};
+(()=>{const b=document.createElement('button');b.id='cmResume';b.className=g('cmInsert').className;b.hidden=true;b.style.marginTop='8px';g('cmInsert').after(b);
+ b.onclick=async()=>{const P=getP();if(!P)return showResume();
+  // did the last signature actually land? then skip it
+  try{const r=await rq({command:'account_tx',account:W(),limit:30});if((r.result.transactions||[]).some(x=>{const t=x.tx_json||x.tx||{};return t.TransactionType==='Payment'&&(t.Memos||[]).some(m=>{try{const d=JSON.parse(decodeURIComponent(escape(m.Memo.MemoData.match(/../g).map(h=>String.fromCharCode(parseInt(h,16))).join(''))));return d.v===P.vid&&d.i===P.cur+1}catch(e){return false}})})){P.done=Math.max(P.done,P.cur+1)}}catch(e){}
+  if(P.done>=P.G.length){localStorage.removeItem(PK);g('cmStatus').textContent='All signatures are in. Counting…';showResume();return}runCoin(P)}})();
+async function refresh(){try{CR=await fj('coin_results.json')}catch(e){}try{R=await fj('ashes_results.json')}catch(e){}paintShops();if(MOCK){mine={vouchers:[{id:'MOCKVOUCHER1'}],bases:[{id:'MOCKBASE0001'},{id:'MOCKBASE0002'}],atts:['02','06','08','01','09'].map((a,i)=>({id:'MOCKATT000'+i,a})),poses:['p1','p2','p3'].map((o,i)=>({id:'MOCKPOSE000'+i,o}))};if(!pick.base){pick.base='MOCKBASE0001';pick.att=['MOCKATT0000','MOCKATT0001','MOCKATT0002'];pick.pose='MOCKPOSE0002'}}else{try{await loadMine()}catch(e){}}paintMachine();paintClaims();paintCoin();showResume()}
 g('w').onchange=refresh;
 (async()=>{C=await fj('ashes_public.json');const q=new URLSearchParams(location.search).get('wallet');if(valid(q))g('w').value=q;show((location.hash||'#ashes').slice(1)||'ashes');await refresh();
  const DEV=new URLSearchParams(location.search).get('finale');   // STAGING ONLY dev hook: ?finale=<build id> replays the final sequence for a finished build
