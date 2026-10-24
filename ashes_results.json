@@ -4,7 +4,7 @@
   "burned_m2n": "25000",
   "treasury_m2n": "25000"
  },
- "updated": 1792805786.4202602,
+ "updated": 1792805866.607232,
  "cost_m2n": "50000",
  "max_builds_per_wallet": 3,
  "public_builds": 300,
@@ -16,7 +16,7 @@
   "h:f90c96126277da3f": 3,
   "h:f81372722ed81ccf": 3,
   "h:2d84ed13eb9057d3": 1,
-  "h:86413675b5ba9c6c": 1
+  "h:86413675b5ba9c6c": 2
  },
  "builds": [
   {
@@ -575,6 +575,26 @@
    "nft_id": null,
    "offer_id": null,
    "refund_tx": "A6DFBF67E6BB5E750047F795CCACDA303985824EE65B9D9BEF2E142EE0D9BABB",
+   "mint_tx": null,
+   "w": "h:86413675b5ba9c6c",
+   "image": null
+  },
+  {
+   "id": "MPMVLQ9IVB",
+   "pay_tx": "61B92AC7B3C13C46A25DD1C4985DBD332B0D869A286514D6300EDA62DC4DC75C",
+   "status": "waiting_render",
+   "reason": null,
+   "pose": "pose2_power_tools_dark",
+   "glow": false,
+   "pants_variant": "clean jeans",
+   "bg": "pose",
+   "base_key": "cabin",
+   "seed": "E8ADBE806109A7CBCFEFF8FF47C22D8BA347BDABD515485336F44EFC13BC5EDC",
+   "split_burn_tx": null,
+   "split_treasury_tx": null,
+   "nft_id": null,
+   "offer_id": null,
+   "refund_tx": null,
    "mint_tx": null,
    "w": "h:86413675b5ba9c6c",
    "image": null
