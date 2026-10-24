@@ -31,7 +31,7 @@
 .status{margin-top:8px;min-height:2.4em;color:var(--gold);font-size:.95rem}
 h3{font-size:.95rem;margin:14px 0 6px;color:var(--pickle)}.cost{margin-top:12px;font-size:.85rem;color:var(--cream)}.cost small{color:#b9c0d0}
 #qr{text-align:center;margin:10px 0}#qr img{background:#fff;padding:8px;border-radius:8px}.small{font-size:.75rem;color:#8a93a8}.foot{text-align:center;margin-top:20px}
-#claims a{display:block;margin-top:8px;padding:12px;border-radius:999px;text-align:center;background:var(--gold);color:var(--ink);text-decoration:none;border:3px solid var(--ink)}
+#claims a,#vmClaims a{display:block;margin-top:8px;padding:12px;border-radius:999px;text-align:center;background:var(--gold);color:var(--ink);text-decoration:none;border:3px solid var(--ink)}
 .full{margin:.3rem 0;color:var(--gold);font-size:.85rem}.it .qty{position:absolute;top:4px;right:4px;background:var(--fire);color:#fff;border-radius:999px;padding:1px 6px;font-size:.65rem}.it{position:relative}
 
 .btn.cafe{display:inline-block;text-decoration:none;text-align:center;color:var(--ink)}.it a.cafe{display:block;margin-top:4px;border:2px solid var(--ink);border-radius:999px;background:var(--gold);color:var(--ink);text-decoration:none;padding:4px;font-weight:700}
@@ -95,3 +95,15 @@ h3{font-size:.95rem;margin:14px 0 6px;color:var(--pickle)}.cost{margin-top:12px;
 .cm-wait{animation:vblink 1.2s ease-in-out infinite}
 @keyframes vpop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes vblink{50%{opacity:.45}}
+
+/* voucher reveal + pickle reveal (Oct 23) */
+.cm.working .cm-hopper{animation:shake .3s infinite}.cm.working .vm-coinslot{box-shadow:0 0 16px var(--gold),0 0 30px var(--gold)}
+.cm-funnel{position:relative;overflow:visible}.cm-drop{position:absolute;top:-60px;width:26px!important;height:26px!important;font-size:0!important;animation:cmdrop .9s ease-in forwards;z-index:3}@keyframes cmdrop{to{transform:translateY(70px) rotate(540deg) scale(.5);opacity:0}}
+.cm-billslot.printing .cm-bill{display:none}.cm-billslot.printing{height:240px}
+.cm-out{position:absolute;top:6px;left:8%;width:84%;border-radius:6px;box-shadow:0 10px 20px #000;transform:translateY(calc(-100% - 10px));animation:billout 1.3s cubic-bezier(.3,1.3,.5,1) forwards;z-index:1}@keyframes billout{to{transform:translateY(var(--o)) rotate(var(--r))}}
+.cm-out-tag{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);z-index:3;background:var(--green,#4caf50);color:#000;font-weight:800;padding:4px 12px;border-radius:999px;box-shadow:0 0 14px var(--gold);animation:vpop .4s ease-out;white-space:nowrap}
+.cm-vcount{margin-top:10px;text-align:center;background:#08090c;border:3px solid var(--gold);border-radius:12px;padding:8px;color:var(--cream)}.cm-vcount .vc-n{font-size:2rem;font-weight:800;color:var(--gold);line-height:1}.cm-vcount .vc-bills{font-size:1.4rem;letter-spacing:2px;min-height:1.6rem}.cm-vcount em{font-size:.8rem;opacity:.7}
+.vm-tray{transition:height .6s ease}.vm-tray.reveal{height:min(110vw,440px)}
+#vmBanner{text-align:center;font-weight:800;font-size:1.3rem;color:var(--gold);margin:8px 0 4px;text-shadow:0 0 10px var(--gold)}#vmBanner.vpop{animation:vpop .5s ease-out}
+#vmClaims a{display:block;margin:6px auto;text-align:center}
+@media(max-width:520px){.cm-billslot.printing{height:190px}}
