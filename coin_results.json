@@ -10,6 +10,7 @@
   "Gold": 100000
  },
  "voucher_value": 50000,
+ "machine_fee_drops": 100000,
  "cap_per_wallet": 3,
  "player_supply": 300,
  "player_minted": 23,
@@ -357,5 +358,5 @@
    "voucher": "001900007270CB009A03CA38DE2DEDB5BCADEE45E4BD17324104C35A014BB5C4"
   }
  ],
- "updated": 1792805422.212133
+ "updated": 1792807605.47306
 }
