@@ -88,3 +88,10 @@ h3{font-size:.95rem;margin:14px 0 6px;color:var(--pickle)}.cost{margin-top:12px;
 .banner.cafeb img{max-height:none;object-fit:contain}.banner.lineup{margin-top:10px}.banner.lineup img{max-height:none}
 .cm-coins .c.mine{cursor:pointer;opacity:.55}.cm-coins .c.mine.sel{opacity:1;outline:3px solid var(--pink)}#vmPay label{display:block;margin-top:3px;color:var(--gold);cursor:pointer}
 .vm-coin{flex-wrap:wrap}.vm-billslot{width:44px;height:10px}.vm-getv{flex-basis:100%;color:var(--gold);font-size:.6rem}
+
+.voucher-success{background:linear-gradient(135deg,#1a3a1a,#0d1f0d);border:2px solid #4caf50;border-radius:12px;padding:16px;text-align:center;margin:8px 0;animation:vpop .4s ease-out}
+.voucher-success .big{font-size:1.4em;font-weight:700;color:#a5d6a7;margin-bottom:6px}
+.voucher-success .small{font-size:.85em;opacity:.85}
+.cm-wait{animation:vblink 1.2s ease-in-out infinite}
+@keyframes vpop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes vblink{50%{opacity:.45}}

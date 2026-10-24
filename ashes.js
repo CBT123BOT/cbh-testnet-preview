@@ -99,10 +99,15 @@ async function runCoin(P){busy=true;paintCoin();
    P.cur=i;P.t=Date.now();localStorage.setItem(PK,JSON.stringify(P));
    await sign({TransactionType:'Batch',Flags:65536,Sequence:sq,Fee:String((raw.length+2)*20),RawTransactions:raw},`COIN MACHINE (TESTNET): signature ${i+1}/${P.G.length}, ${P.G[i].length} coins into the hopper`);
    P.done=i+1;P.nsq=sq+raw.length+1;localStorage.setItem(PK,JSON.stringify(P))}
-  localStorage.removeItem(PK);g('cmStatus').textContent='Counting… your bill prints in about a minute, then a CLAIM button appears.';rumble();
-  for(let k=0;k<60;k++){await new Promise(r=>setTimeout(r,5000));try{CR=await fj('coin_results.json')}catch(e){continue}const q=(CR.requests||[]).find(x=>x.id===P.vid);
-   if(q&&q.status==='refunded'){g('cmStatus').textContent='Handed back: '+q.reason+'. Nothing was taken. (If you stop partway, your coin offers are cancelled automatically after 15 min.)';break}if(q&&q.status==='done'){chime();g('cmStatus').textContent='💵 Your Mickel Nickel bill(s) printed! Claim it below, then use it in the Vending Machine.';break}}
+  localStorage.removeItem(PK);savePR(P.vid);await pollResult(P.vid);
  }catch(e){g('cmStatus').textContent=e.message+(getP()?' Tap CONTINUE to try again.':'')}cmSel.clear();busy=false;refresh();showResume()}
+const PRK='cbhCoinPendingResult';function savePR(vid){localStorage.setItem(PRK,JSON.stringify({vid,w:W(),t:Date.now()}))}
+function getPR(){try{const p=JSON.parse(localStorage.getItem(PRK)||'null');if(!p||p.w!==W()||Date.now()-p.t>15*60e3)return null;return p}catch(e){return null}}
+let polling=null;async function pollResult(vid){if(!vid||polling===vid)return;polling=vid;g('cmStatus').innerHTML='<span class="cm-wait">⏳ Checking the ledger… your voucher prints in about a minute.</span>';rumble();
+ try{for(let k=0;k<60;k++){await new Promise(r=>setTimeout(r,5000));try{CR=await fj('coin_results.json')}catch(e){continue}const q=(CR.requests||[]).find(x=>x.id===vid);
+  if(q&&q.status==='refunded'){g('cmStatus').textContent='Handed back: '+q.reason+'. Nothing was taken.';localStorage.removeItem(PRK);break}
+  if(q&&q.status==='done'){chime();const n=q.vouchers||q.n_vouchers||1;g('cmStatus').innerHTML=`<div class="voucher-success"><div class="big">💵 VOUCHER PRINTED!</div><div>${n>1?n+' vouchers':'Your voucher is'} ready</div><div class="small">Tap 🎁 CLAIM below (0 XRP), then head to the Vending Machine.</div></div>`;localStorage.removeItem(PRK);await refresh();const c=g('cmClaims');if(c)c.scrollIntoView({behavior:'smooth',block:'center'});break}}}finally{polling=null}}
+window.addEventListener('pageshow',()=>{const p=getPR();if(p)pollResult(p.vid)});setTimeout(()=>{const p=getPR();if(p)pollResult(p.vid)},1500);
 function showResume(){const P=getP(),b=g('cmResume');if(!b)return;b.hidden=!P||busy;if(P)b.textContent=`▶ CONTINUE: sign ${P.done+1} of ${P.G.length} (your coins are waiting in the hopper)`}
 g('cmInsert').onclick=()=>{const ids=[...cmSel];const G=[];for(let i=0;i<ids.length;i+=7)G.push(ids.slice(i,i+7));
  runCoin({w:W(),vid:'CM'+Date.now().toString(36).toUpperCase(),G,n:ids.length,exp:Math.floor(Date.now()/1000)-946684800+3600,done:0,nsq:0,t:Date.now()})};
@@ -110,7 +115,7 @@ g('cmInsert').onclick=()=>{const ids=[...cmSel];const G=[];for(let i=0;i<ids.len
  b.onclick=async()=>{const P=getP();if(!P)return showResume();
   // did the last signature actually land? then skip it
   try{const r=await rq({command:'account_tx',account:W(),limit:30});if((r.result.transactions||[]).some(x=>{const t=x.tx_json||x.tx||{};return t.TransactionType==='Payment'&&(t.Memos||[]).some(m=>{try{const d=JSON.parse(decodeURIComponent(escape(m.Memo.MemoData.match(/../g).map(h=>String.fromCharCode(parseInt(h,16))).join(''))));return d.v===P.vid&&d.i===P.cur+1}catch(e){return false}})})){P.done=Math.max(P.done,P.cur+1)}}catch(e){}
-  if(P.done>=P.G.length){localStorage.removeItem(PK);g('cmStatus').textContent='All signatures are in. Counting…';showResume();return}runCoin(P)}})();
+  if(P.done>=P.G.length){localStorage.removeItem(PK);savePR(P.vid);showResume();pollResult(P.vid);return}runCoin(P)}})();
 async function refresh(){try{CR=await fj('coin_results.json')}catch(e){}try{R=await fj('ashes_results.json')}catch(e){}paintShops();if(MOCK){mine={vouchers:[{id:'MOCKVOUCHER1'}],bases:[{id:'MOCKBASE0001'},{id:'MOCKBASE0002'}],atts:['02','06','08','01','09'].map((a,i)=>({id:'MOCKATT000'+i,a})),poses:['p1','p2','p3'].map((o,i)=>({id:'MOCKPOSE000'+i,o}))};if(!pick.base){pick.base='MOCKBASE0001';pick.att=['MOCKATT0000','MOCKATT0001','MOCKATT0002'];pick.pose='MOCKPOSE0002'}}else{try{await loadMine()}catch(e){}}paintMachine();paintClaims();paintCoin();showResume()}
 g('w').onchange=refresh;
 (async()=>{C=await fj('ashes_public.json');const q=new URLSearchParams(location.search).get('wallet');if(valid(q))g('w').value=q;show((location.hash||'#ashes').slice(1)||'ashes');await refresh();
